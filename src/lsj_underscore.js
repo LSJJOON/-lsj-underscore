@@ -1,7 +1,7 @@
 function _each (list, iter) {
 	var keys = _keys(list);
 	for (var i = 0; i < keys.length; i++) {
-		iter(list[keys[i]], i);
+		iter(list[keys[i]], keys[i]);
 	}
 }
 exports._each = _each;
@@ -26,14 +26,15 @@ exports._filter = _filter;
 
 function _reduce (list, iter, memo) {
 	if (memo === undefined) {
-		memo = list[0];
-		for (let i = 1; i < list.length; i++) {
-			memo = iter(memo, list[i]);
-		}
+		memo = _get(list, _keys(list)[0]);
+		console.log('asdflaksdfaisb', memo);
+		_each(_rest(list), function (item, key) {
+			memo = iter(memo, item, key);
+		});
 	} else {
-		for (let i = 0; i < list.length; i++) {
-			memo = iter(memo, list[i]);
-		}
+		_each(list, function (item, key) {
+			memo = iter(memo, item, key);
+		});
 	}
 	return memo;
 }
@@ -79,9 +80,10 @@ exports._go = _go;
 function _rest (list, index) {
 	if (!index || index <= 0) index = 1;
 	var newList = [];
-	for (var i = index; i < list.length; i++) {
-		newList.push(list[i]);
-	}
+	_each(list, (item, innerIndex) => {
+		if (innerIndex < index) return;
+		newList.push(item);
+	});
 	return newList;
 }
 exports._rest = _rest;
